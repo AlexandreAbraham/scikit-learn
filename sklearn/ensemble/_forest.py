@@ -304,7 +304,8 @@ class BaseForest(MultiOutputMixin, BaseEnsemble, metaclass=ABCMeta):
         # Remap output
         self.n_features_ = X.shape[1]
 
-        y = np.atleast_1d(y)
+        if not issparse(y):
+            y = np.atleast_1d(y)
         if y.ndim == 2 and y.shape[1] == 1:
             warn("A column-vector y was passed when a 1d array was"
                  " expected. Please change the shape of y to "
@@ -540,11 +541,11 @@ class ForestClassifier(ClassifierMixin, BaseForest, metaclass=ABCMeta):
     def _validate_y_class_weight(self, y):
         check_classification_targets(y)
 
-        y = np.copy(y)
+        y = y.copy()
         expanded_class_weight = None
 
         if self.class_weight is not None:
-            y_original = np.copy(y)
+            y_original = y.copy()
 
         self.classes_ = []
         self.n_classes_ = []
